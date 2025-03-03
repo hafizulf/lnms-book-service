@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package book;
+
+import "book-model.proto";
+
+message Empty {}
+
+service BookService {
+  rpc FindBooks(Empty) returns (FindBooksResponse);
+}

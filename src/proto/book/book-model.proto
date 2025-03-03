@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package book;
+
+message Book {
+  string id = 1;
+  string name = 2;
+  int64 year = 3;
+  string author = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message FindBooksResponse {
+  repeated Book books = 1;
+}

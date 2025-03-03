@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const appPort = configService.get<number>('APP_PORT') || 3000;
+  const appPort = configService.get<number>('APP_PORT') || 3001;
   const grpcUrl = configService.get<string>('GRPC_URL');
 
   app.connectMicroservice<MicroserviceOptions>({
@@ -44,6 +44,6 @@ async function bootstrap() {
   await app.listen(appPort);
 
   console.log(`Microservice is running on: ${grpcUrl}`);
-  console.log('Application is running on: http://localhost:3000');
+  console.log(`Application is running on: http://localhost:${appPort}`);
 }
 bootstrap();
