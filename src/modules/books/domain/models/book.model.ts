@@ -1,5 +1,6 @@
 import { AggregateRoot } from "@nestjs/cqrs";
 import { BookEntity } from "../../infrastructure/database/entities/book.entity";
+import { CreateBookRequestDto } from "../../interface/http/dto/create-book.dto";
 
 export class Book extends AggregateRoot {
   private readonly _id?: number;
@@ -13,6 +14,17 @@ export class Book extends AggregateRoot {
   constructor(id?: number) {
     super();
     this._id = id;
+  }
+
+  public static create(bookData: CreateBookRequestDto): Book {
+    const book = new Book();
+
+    book._isbn = bookData.isbn;
+    book._name = bookData.name;
+    book._year = bookData.year;
+    book._author = bookData.author;
+
+    return book;
   }
 
   public static fromEntity(entity: BookEntity): Book {

@@ -7,6 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookEntity } from './infrastructure/database/entities/book.entity';
 import { CqrsModule } from '@nestjs/cqrs';
 import { QueryHandlers } from './application/query/handlers';
+import { BookController } from './interface/http/controller/book-controller';
+import { BookService } from './application/services/book-service';
+import { CommandHandlers } from './application/command/handlers';
 
 @Module({
   imports: [
@@ -15,6 +18,7 @@ import { QueryHandlers } from './application/query/handlers';
   ],
   controllers: [
     BookRpcController,
+    BookController,
   ],
   providers: [
     {
@@ -22,7 +26,9 @@ import { QueryHandlers } from './application/query/handlers';
       useClass: BookRepositoryImpl,
     },
     ...QueryHandlers,
+    ...CommandHandlers,
     BookRpcService,
+    BookService,
   ],
 })
 export class BookModule {}

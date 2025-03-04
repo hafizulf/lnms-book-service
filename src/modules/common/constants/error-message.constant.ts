@@ -1,4 +1,4 @@
 export const ERROR_MESSAGES = {
-  USER_ALREADY_EXISTS: 'User with this email already exists',
-  USER_NOT_FOUND: 'User not found',
+  BOOK_ALREADY_EXISTS: 'Book with this isbn already exists',
+  BOOK_NOT_FOUND: 'Book not found',
 };
