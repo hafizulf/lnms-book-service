@@ -4,5 +4,6 @@ export class CreateBookCommand {
     name: string;
     year: number;
     author: string;
+    filename: string;
   }) {}
 }

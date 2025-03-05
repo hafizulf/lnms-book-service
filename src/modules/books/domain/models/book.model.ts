@@ -1,6 +1,6 @@
 import { AggregateRoot } from "@nestjs/cqrs";
 import { BookEntity } from "../../infrastructure/database/entities/book.entity";
-import { CreateBookRequestDto } from "../../interface/http/dto/create-book.dto";
+import { CreateBookModelDto, CreateBookRequestDto } from "../../interface/http/dto/create-book.dto";
 
 export class Book extends AggregateRoot {
   private readonly _id?: number;
@@ -8,6 +8,7 @@ export class Book extends AggregateRoot {
   private _name: string;
   private _year: number;
   private _author: string;
+  private _filename: string;
   private _created_at: Date;
   private _updated_at: Date;
 
@@ -16,13 +17,14 @@ export class Book extends AggregateRoot {
     this._id = id;
   }
 
-  public static create(bookData: CreateBookRequestDto): Book {
+  public static create(bookData: CreateBookModelDto): Book {
     const book = new Book();
 
     book._isbn = bookData.isbn;
     book._name = bookData.name;
     book._year = bookData.year;
     book._author = bookData.author;
+    book._filename = bookData.filename;
 
     return book;
   }
@@ -34,6 +36,7 @@ export class Book extends AggregateRoot {
     book._name = entity.name;
     book._year = entity.year;
     book._author = entity.author;
+    book._filename = entity.filename;
     book._created_at = entity.created_at;
     book._updated_at = entity.updated_at;
 
@@ -50,6 +53,7 @@ export class Book extends AggregateRoot {
     entity.name = this._name;
     entity.year = this._year;
     entity.author = this._author;
+    entity.filename = this._filename;
     entity.created_at = this._created_at;
     entity.updated_at = this._updated_at;
 
@@ -76,6 +80,10 @@ export class Book extends AggregateRoot {
     return this._author;
   }
 
+  get filename(): string {
+    return this._filename;
+  }
+
   get created_at(): Date {
     return this._created_at;
   }
@@ -99,6 +107,10 @@ export class Book extends AggregateRoot {
 
   set author(value: string) {
     this._author = value;
+  }
+
+  set filename(value: string) {
+    this._filename = value;
   }
 
   set created_at(value: Date) {

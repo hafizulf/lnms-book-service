@@ -17,6 +17,9 @@ export class BookEntity {
   @Column()
   author: string;
 
+  @Column()
+  filename: string;
+
   @CreateDateColumn({ type: 'timestamptz' })
   created_at: Date;
 

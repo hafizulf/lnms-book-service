@@ -15,6 +15,7 @@ export class BookService {
 
   async createBook(
     bookData: CreateBookRequestDto,
+    filename: string,
   ): Promise<CreateBookResponseDto> {
     const findBookByIsbn = await this.queryBus.execute(
       new FindBookByIsbnQuery(bookData.isbn),
@@ -25,7 +26,7 @@ export class BookService {
     }
 
     const createdBooks = await this.commandBus.execute(
-      new CreateBookCommand(bookData)
+      new CreateBookCommand({ ...bookData, filename }),
     );
 
     return TransformerResponse.transform(createdBooks, CreateBookResponseDto);
