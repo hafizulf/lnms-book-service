@@ -27,6 +27,9 @@ export class BookResponseDto {
   author: string;
 
   @Expose()
+  filename: string;
+
+  @Expose()
   created_at: Date;
 
   @Expose()

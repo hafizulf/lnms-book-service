@@ -5,6 +5,9 @@ import { Book } from "../../domain/models/book.model";
 import { BookResponseDto } from "../../interface/grpc/dto/book-response.dto";
 import { TransformerResponse } from "src/modules/common/helpers/transformer.helper";
 import { FindBooksResponseDto } from "../../interface/grpc/dto/find-books-response.dto";
+import { FindBookByIsbnQuery } from "../query/impl/find-book-by-isbn.query";
+import { RpcException } from "@nestjs/microservices";
+import { status } from "@grpc/grpc-js";
 
 @Injectable()
 export class BookRpcService {
@@ -24,5 +27,21 @@ export class BookRpcService {
     return {
       books: transformedDataBooks,
     };
+  }
+
+  async findBookByIsbn(isbn: string): Promise<BookResponseDto> {
+    const book = await this.queryBus.execute(
+      new FindBookByIsbnQuery(isbn),
+    )
+
+    if (!book) {
+      console.log('Book not found');
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: 'Book not found',
+      });
+    }
+
+    return TransformerResponse.transform(book, BookResponseDto);
   }
 }

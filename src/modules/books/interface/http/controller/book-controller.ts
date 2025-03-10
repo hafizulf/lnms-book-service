@@ -9,6 +9,7 @@ import { extname, join } from "path";
 import { FILE_UPLOAD } from "src/modules/common/constants/file.constants";
 import { unlink, rename } from 'fs/promises';
 import { unlinkSync } from "fs";
+import { FindBookByIsbnRequestDto } from "../../grpc/dto/find-one-book.dto";
 
 @Controller('books')
 export class BookController {
@@ -16,6 +17,18 @@ export class BookController {
     private readonly _bookRpcService: BookRpcService,
     private readonly _bookService: BookService,
   ) {}
+
+  @Get('/:isbn')
+  async findBookByIsbn(request: FindBookByIsbnRequestDto) {
+    console.log(request);
+    const data = await this._bookRpcService.findBookByIsbn(request.isbn);
+
+    return {
+      statusCode: 200,
+      message: 'Data has been successfully retrieved',
+      data,
+    };
+  }
 
   @Get()
   async findBooks() {

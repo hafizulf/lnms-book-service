@@ -8,10 +8,15 @@ message Book {
   string name = 3;
   int64 year = 4;
   string author = 5;
-  string created_at = 6;
-  string updated_at = 7;
+  string filename = 6;
+  string created_at = 7;
+  string updated_at = 8;
 }
 
 message FindBooksResponse {
   repeated Book books = 1;
+}
+
+message FindBookByIsbnResponse {
+  Book book = 1;
 }
