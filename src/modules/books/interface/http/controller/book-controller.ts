@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, ParseFilePipeBuilder, Post, UnprocessableEntityException, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, InternalServerErrorException, NotFoundException, Param, ParseFilePipeBuilder, Post, UnprocessableEntityException, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { BookRpcService } from "src/modules/books/application/services/book-rpc.service";
 import { ResponseDto } from "src/modules/common/dto/response.dto";
 import { CreateBookRequestDto, CreateBookResponseDto } from "../dto/create-book.dto";
@@ -9,7 +9,7 @@ import { extname, join } from "path";
 import { FILE_UPLOAD } from "src/modules/common/constants/file.constants";
 import { unlink, rename } from 'fs/promises';
 import { unlinkSync } from "fs";
-import { FindBookByIsbnRequestDto } from "../../grpc/dto/find-one-book.dto";
+import { RpcException } from "@nestjs/microservices";
 
 @Controller('books')
 export class BookController {
@@ -19,15 +19,23 @@ export class BookController {
   ) {}
 
   @Get('/:isbn')
-  async findBookByIsbn(request: FindBookByIsbnRequestDto) {
-    console.log(request);
-    const data = await this._bookRpcService.findBookByIsbn(request.isbn);
-
-    return {
-      statusCode: 200,
-      message: 'Data has been successfully retrieved',
-      data,
-    };
+  async findBookByIsbn(
+    @Param('isbn') isbn: string,
+  ) {
+    try {
+      const data = await this._bookRpcService.findBookByIsbn(isbn);
+      return {
+        statusCode: 200,
+        message: 'Data has been successfully retrieved',
+        data,
+      };
+    } catch (error) {
+      if (error instanceof RpcException) {
+        throw new NotFoundException(error.message);
+      }
+      console.error(error);
+      throw new InternalServerErrorException('Unexpected error');
+    }
   }
 
   @Get()
