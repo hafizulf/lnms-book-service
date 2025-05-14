@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres_lnms_book:
+    image: postgres:17
+    container_name: postgres_lnms_book
+    ports:
+      - "${DB_PORT:-5436}:5432"
+    env_file:
+      - .env.development
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - lnms_book_data:/var/lib/postgresql/data
+      - ./master-init:/docker-entrypoint-initdb.d
+    command: >
+      postgres -c wal_level=replica
+               -c max_wal_senders=10
+               -c wal_keep_size=64
+               -c hot_standby=on
+
+  postgres_lnms_book_replica:
+    image: postgres:17
+    container_name: postgres_lnms_book_replica
+    ports:
+      - "${DB_REPLICA_PORT:-5437}:5432"
+    env_file:
+      - .env.development
+    environment:
+      POSTGRES_USER: ${DB_REPLICA_USERNAME}
+      POSTGRES_PASSWORD: ${DB_REPLICA_PASSWORD}
+    depends_on:
+      - postgres_lnms_book
+    user: postgres
+    volumes:
+      - lnms_book_replica_data:/var/lib/postgresql/data
+    command: >
+      bash -c "
+        sleep 5 &&
+        until pg_basebackup -h postgres_lnms_book -D /var/lib/postgresql/data -U ${DB_REPLICA_USERNAME} -Fp -Xs -P -R;
+        do echo 'Waiting for master...'; sleep 1; done &&
+        chown -R postgres:postgres /var/lib/postgresql/data &&
+        chmod 700 /var/lib/postgresql/data &&
+        postgres
+      "
+
+volumes:
+  lnms_book_data:
+  lnms_book_replica_data:

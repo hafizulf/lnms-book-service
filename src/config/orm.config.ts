@@ -23,6 +23,6 @@ export default (configService: ConfigService): TypeOrmModuleOptions => ({
     ],
   },
   entities: [path.join(__dirname, '..', 'modules', '**', '*.entity.js')],
-  synchronize: false,
+  synchronize: configService.get('NODE_ENV') !== 'production',
   logging: true,
 });
